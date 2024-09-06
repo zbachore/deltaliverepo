@@ -1,0 +1,39 @@
+name: Setup Databricks CLI
+
+description: |
+  Download the latest Databricks CLI snapshot build and add it to $PATH.
+
+inputs:
+  version:
+    description: 'The version of the Databricks CLI to download (defaults to latest).'
+    required: false
+
+  snapshot:
+    description: 'Install a snapshot build (set to "true" to enable).'
+    required: false
+
+  branch:
+    description: '(snapshot build only) The branch to download the snapshot build for.'
+    required: false
+
+runs:
+  using: "composite"
+  steps:
+    - name: Download snapshot build
+      if: ${{ inputs.snapshot == 'true' }}
+      shell: bash
+      run: bash $GITHUB_ACTION_PATH/setup_snapshot.sh
+      env:
+        GH_REPO: databricks/cli
+        BRANCH: ${{ inputs.branch }}
+
+    - name: Download release build
+      if: ${{ inputs.snapshot != 'true' }}
+      shell: bash
+      run: bash $GITHUB_ACTION_PATH/setup_release.sh
+      env:
+        VERSION: ${{ inputs.version }}
+
+    - name: Get Databricks CLI version
+      shell: bash
+      run: databricks version --output json
