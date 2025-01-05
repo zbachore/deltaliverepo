@@ -9,7 +9,7 @@ import dlt
 
 # COMMAND ----------
 
-root ='abfss://main@zbelachewadlsstorage.dfs.core.windows.net/dev'
+root ='abfss://unity-catalog-storage@dbstoragefkr2wabue4hpg.dfs.core.windows.net/2523655398384705'
 
 data_sources = [
     {"view_name": "orders_raw_view", "source": f"{root}/raw/orders/"},
