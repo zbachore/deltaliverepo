@@ -5,11 +5,6 @@
 
 # COMMAND ----------
 
-# MAGIC %sql 
-# MAGIC select current_catalog()
-
-# COMMAND ----------
-
 root ='abfss://unity-catalog-storage@dbstoragefkr2wabue4hpg.dfs.core.windows.net/2523655398384705'
 
 # COMMAND ----------
