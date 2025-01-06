@@ -39,7 +39,7 @@ This notebook sets up Delta Live Tables (DLT) to create silver tables from bronz
 - **data_quality_expectations**: Defines data quality rules for each silver table.
 - **create_silver_tables**: Function definition using the `dlt.table` decorator to create Delta Live Tables with specified properties and data quality rules.
 
-### 5. gold view - Notebook
+### 5. Gold View - Notebook
 
 This notebook creates a gold view by joining the silver tables for orders, customers, and products. It filters out orders with a status of 'Pending' and selects relevant columns to create a comprehensive view of the data.
 
@@ -50,13 +50,25 @@ This notebook creates a gold view by joining the silver tables for orders, custo
 
 ## Getting Started
 
-1. **Clone the Repository**:
+1. **Copy Repository URL**:
    ```bash
-   git clone https://github.com/zbachore/deltaliverepo.git
-Set Up Databricks Workspace:
+   https://github.com/zbachore/deltaliverepo.git
 
-Link your GitHub account to your Databricks workspace.
-Create a Git folder and clone the repository into your Databricks workspace.
+2. **Link Your GitHub Account to Your Databricks Workspace**:
+
+- In the upper-right corner of any Databricks page, click your username and select Settings.
+- Click the Linked accounts tab.
+- Change your provider to GitHub.
+- Select Link Git account and click Link.
+- The Databricks GitHub App authorization page will appear.
+- Authorize the GitHub App to complete the setup.
+- That's it! Your GitHub account should now be linked to your Databricks workspace 
+
+3. **Clone the repository into your Databricks workspace**: 
+- Under the "Home" Folder, create a Git folder by clicking "Create" and selecting "Git Folder".
+- Paste the repository url under "Git repository URL" and select "GitHub" under "Git provider".
+- Git folder name can be any name but desirable to use the same name as the repository name.
+
 Create a pipeline under Delta Live Tables by adding all the notebooks listed above.
 
 Follow the order of the notebooks to generate sample data, create raw, bronze, and silver tables, and finally create the gold view.
