@@ -1,7 +1,7 @@
 # deltaliverepo
 Delta Live code from databricks  will live here.
 
-# Delta Live Tables Example
+# Delta Live Tables
 
 This repository demonstrates the usage of Delta Live Tables (DLT) using a configuration-driven method. The notebooks are designed to be simple and easy to understand, showcasing how to generate, process, and manage data using Delta Live Tables in Databricks.
 
@@ -69,8 +69,8 @@ This notebook creates a gold view by joining the silver tables for orders, custo
 - Paste the repository url under "Git repository URL" and select "GitHub" under "Git provider".
 - Git folder name can be any name but desirable to use the same name as the repository name.
 
-Create a pipeline under Delta Live Tables by adding all the notebooks listed above.
+4. **Create a pipeline**:
+- Under Delta Live Tables, create a pipeline by adding all the notebooks listed above.
 
-Follow the order of the notebooks to generate sample data, create raw, bronze, and silver tables, and finally create the gold view.
 Conclusion
 This repository provides a simple and clear example of using Delta Live Tables in Databricks to manage and process data in a configuration-driven manner. Feel free to explore and modify the notebooks to suit your needs.
