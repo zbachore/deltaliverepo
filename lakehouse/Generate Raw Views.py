@@ -17,7 +17,7 @@ data_sources = [
     {"view_name": "customers_raw_view", "source": f"{root}/raw/customers/"},
 ]
 
-
+# Adding this comment to test 
 
 # COMMAND ----------
 
