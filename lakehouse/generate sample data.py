@@ -5,15 +5,13 @@
 
 # COMMAND ----------
 
-root ='abfss://unity-catalog-storage@dbstoragefkr2wabue4hpg.dfs.core.windows.net/2523655398384705'
-
-# COMMAND ----------
-
 from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, rand, round, expr, current_timestamp
 from datetime import datetime
 import uuid
 import json
+
+your_volume = '/Volumes/devcatalog/nyctaxi/files'
 
 # Get the current timestamp for the filename
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -37,7 +35,7 @@ df = (
 # df.show(truncate=False)
 
 # Save the DataFrame as a JSON file in your Databricks workspace with the timestamp in the filename
-output_path = f"{root}/raw/orders/orders_data_{timestamp}.json"
+output_path = f"{your_volume}/raw/orders/orders_data_{timestamp}.json"
 df.write.mode("overwrite").json(output_path)
 
 print(f"orders data saved to {output_path}")
@@ -45,7 +43,7 @@ print(f"orders data saved to {output_path}")
 df.createOrReplaceTempView('Orders')
 
 
-df.createOrReplaceTempView('Orders')
+# df.createOrReplaceTempView('Orders')
 
 
 
@@ -123,7 +121,7 @@ customer_df = (
 
 # Save the DataFrame as a JSON file in your Databricks workspace
 
-customer_output_path = f"{root}/raw/customers/customer_data_{timestamp}.json"
+customer_output_path = f"{your_volume}/raw/customers/customer_data_{timestamp}.json"
 customer_df.write.mode("overwrite").json(customer_output_path)
 
 print(f"Customer data saved to {customer_output_path}")
@@ -173,7 +171,7 @@ product_df = spark.createDataFrame(random_product_data, ["product_id", "product_
 # product_df.show(truncate=False)
 
 # Save the DataFrame as a JSON file in your Databricks workspace
-product_output_path = f"{root}/raw/products/product_data_{timestamp}.json"
+product_output_path = f"{your_volume}/raw/products/product_data_{timestamp}.json"
 product_df.write.mode("overwrite").json(product_output_path)
 
 print(f"Product data saved to {product_output_path}")

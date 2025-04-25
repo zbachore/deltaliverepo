@@ -9,12 +9,12 @@ import dlt
 
 # COMMAND ----------
 
-root ='abfss://unity-catalog-storage@dbstoragefkr2wabue4hpg.dfs.core.windows.net/2523655398384705'
+your_volume = '/Volumes/devcatalog/nyctaxi/files'
 
 data_sources = [
-    {"view_name": "orders_raw_view", "source": f"{root}/raw/orders/"},
-    {"view_name": "products_raw_view", "source": f"{root}/raw/products/"},
-    {"view_name": "customers_raw_view", "source": f"{root}/raw/customers/"},
+    {"view_name": "devcatalog.nyctaxi.orders_raw_view", "source": f"{your_volume}/raw/orders/"},
+    {"view_name": "devcatalog.nyctaxi.products_raw_view", "source": f"{your_volume}/raw/products/"},
+    {"view_name": "devcatalog.nyctaxi.customers_raw_view", "source": f"{your_volume}/raw/customers/"},
 ]
 
 
