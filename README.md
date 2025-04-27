@@ -1,5 +1,3 @@
-# deltaliverepo
-
 # Delta Live Tables
 
 This repository demonstrates the usage of Delta Live Tables (DLT) using a configuration-driven method. The notebooks are designed to be simple and easy to understand, showcasing how to generate, process, and manage data using Delta Live Tables in Databricks.You can clone the repository and use it in your workspace by creating a pipeline. Ensure that you have the configurations under your pipeline settings to pass catalog_name, volume_name, schema_name and num_records to the notebooks.
