@@ -5,19 +5,35 @@
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, rand, round, expr, current_timestamp
+from pyspark.sql.functions import col, expr, pandas_udf, split, concat_ws, lit, lower
+from pyspark.sql.functions import rand, round, current_timestamp
 from datetime import datetime
 import uuid
 import json
+import random
+import pandas as pd
 
-your_volume = '/Volumes/devcatalog/nyctaxi/files'
+# COMMAND ----------
+
+# The volume_name value should be set in the dlt pipeline settings under configurations:
+volume_name = spark.conf.get("volume_name")
+your_volume = f"{volume_name}"
+
+# The value of num_records should be set in the dlt pipeline settings under configurations:
+# This is just to allow me to change the number of records to create right from the dlt pipeline itself without opening the notebook
+num_records = int(spark.conf.get("num_records"))
+
+# Number of records to generate
+num_records = num_records # for orders
+num_customers = num_records # for customers
+num_products = num_records # for products
+
+
+
+# COMMAND ----------
 
 # Get the current timestamp for the filename
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-
-# Number of records to generate
-num_records = 100
 
 # Generate the sample data
 df = (
@@ -36,12 +52,9 @@ df = (
 
 # Save the DataFrame as a JSON file in your Databricks workspace with the timestamp in the filename
 output_path = f"{your_volume}/raw/orders/orders_data_{timestamp}.json"
-df.write.mode("overwrite").json(output_path)
+df.write.mode("append").json(output_path)
 
 print(f"orders data saved to {output_path}")
-
-df.createOrReplaceTempView('Orders')
-
 
 # df.createOrReplaceTempView('Orders')
 
@@ -56,19 +69,9 @@ df.createOrReplaceTempView('Orders')
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
-from pyspark.sql.functions import col, expr, pandas_udf, split, concat_ws, lit, lower
-import random
-import pandas as pd
-
-# Create Spark session
-spark = SparkSession.builder.appName("GenerateCustomerData").getOrCreate()
 
 # Get the current timestamp for the filename
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-
-# Number of unique customers (must match the customer_id range in the order dataset)
-num_customers = 1000
 
 # List of common first and last names
 first_names = ["John", "Jane", "Michael", "Emily", "David", "Emma", "Chris", "Olivia", "Daniel", "Sophia"]
@@ -126,7 +129,7 @@ customer_df.write.mode("overwrite").json(customer_output_path)
 
 print(f"Customer data saved to {customer_output_path}")
 
-customer_df.createOrReplaceTempView('Customers')
+# customer_df.createOrReplaceTempView('Customers')
 
 
 # COMMAND ----------
@@ -138,16 +141,8 @@ customer_df.createOrReplaceTempView('Customers')
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
-
-# Create Spark session
-spark = SparkSession.builder.appName("GenerateProductData").getOrCreate()
-
 # Get the current timestamp for the filename
 timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
-
-# Number of unique products
-num_products = 100
 
 # Lists of product names, categories, and realistic brand names
 product_names = ["Laptop", "Smartphone", "Headphones", "Tablet", "Monitor", "Keyboard", "Mouse", "Printer", "Camera", "Smartwatch"]
@@ -158,14 +153,16 @@ brands = ["Apple", "Samsung", "Sony", "Dell", "HP", "Logitech", "Canon", "Nikon"
 random_product_data = []
 for i in range(num_products):
     product_id = i
+    id = i
     product_name = f"{random.choice(product_names)} Model {random.randint(100, 999)}"
     category = random.choice(categories)
     price = float(f"{50 + random.random() * 950:.2f}")  # Manually format price to two decimal places
     brand = random.choice(brands)
-    random_product_data.append((product_id, product_name, category, price, brand))
+    random_product_data.append((id, product_id, product_name, category, price, brand))
 
 # Create a Spark DataFrame from the generated product data
-product_df = spark.createDataFrame(random_product_data, ["product_id", "product_name", "category", "price", "brand"])
+product_df = spark.createDataFrame(random_product_data, ["id", "product_id", "product_name", "category", "price", "brand"])
+product_df = product_df.withColumn("timestamp", current_timestamp())
 
 # Show the product data
 # product_df.show(truncate=False)
@@ -176,9 +173,5 @@ product_df.write.mode("overwrite").json(product_output_path)
 
 print(f"Product data saved to {product_output_path}")
 
-product_df.createOrReplaceTempView('Products')
-
-
-# COMMAND ----------
-
+# product_df.createOrReplaceTempView('Products')
 
