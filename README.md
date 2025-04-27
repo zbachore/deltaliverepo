@@ -2,6 +2,10 @@
 
 This repository demonstrates the usage of Delta Live Tables (DLT) using a configuration-driven method. The notebooks are designed to be simple and easy to understand, showcasing how to generate, process, and manage data using Delta Live Tables in Databricks.You can clone the repository and use it in your workspace by creating a pipeline. Ensure that you have the configurations under your pipeline settings to pass catalog_name, volume_name, schema_name and num_records to the notebooks.
 
+This repository also includes two other notebooks to demonstrate how to use scd type 1 and scd type 2.
+1. Generate-Append-Only-Delta-Sources: a notebook that simulates data ingestion in an append only delta table.
+2. DLT Tables and Views: a notebook that includes all the code that creates the dlt tables.
+
 ## Notebooks
 
 ### 1. Generate Sample Data - Notebook
