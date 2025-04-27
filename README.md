@@ -1,9 +1,8 @@
 # deltaliverepo
-Delta Live code from databricks  will live here.
 
 # Delta Live Tables
 
-This repository demonstrates the usage of Delta Live Tables (DLT) using a configuration-driven method. The notebooks are designed to be simple and easy to understand, showcasing how to generate, process, and manage data using Delta Live Tables in Databricks.
+This repository demonstrates the usage of Delta Live Tables (DLT) using a configuration-driven method. The notebooks are designed to be simple and easy to understand, showcasing how to generate, process, and manage data using Delta Live Tables in Databricks.You can clone the repository and use it in your workspace by creating a pipeline. Ensure that you have the configurations under your pipeline settings to pass catalog_name, volume_name, schema_name and num_records to the notebooks.
 
 ## Notebooks
 
@@ -19,7 +18,6 @@ This notebook generates sample data for orders, customers, and products, and sav
 
 This notebook sets up Delta Live Tables (DLT) to create views from JSON data stored in Azure storage. It reads streaming data and creates raw tables for orders, products, and customers using autoloader.
 
-  **root**: this is the root location of your catalog
 - **data_sources**: json structure for your data sources configuration.
 - **create_raw_tables**: function using the `dlt.table` decorator to create Delta Live Tables with specified properties.
 
@@ -41,9 +39,9 @@ This notebook sets up Delta Live Tables (DLT) to create silver tables from bronz
 
 ### 5. Gold View - Notebook
 
-This notebook creates a gold view by joining the silver tables for orders, customers, and products. It filters out orders with a status of 'Pending' and selects relevant columns to create a comprehensive view of the data.
+This notebook creates a materialized view by joining the silver tables for orders, customers, and products. It filters out orders with a status of 'Pending' and selects relevant columns to create a comprehensive view of the data.
 
-- **Create or Refresh Streaming Table**: Creates or refreshes a streaming table named `gold_view`.
+- **Create or Refresh materialized view**: Creates or refreshes a materialized view named `gold_view`.
 - **Join Silver Tables**: Performs inner joins between the `Orders_silver`, `customers_silver`, and `Products_silver` tables.
 - **Filter Orders**: Filters out orders with a status of 'Pending'.
 - **Select Columns**: Selects columns such as `customer_id`, `customer_name`, `order_id`, `product_id`, `quantity`, `price`, and `brand`.
