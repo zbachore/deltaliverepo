@@ -5,6 +5,7 @@ This repository demonstrates the usage of Delta Live Tables (DLT) using a config
 This repository also includes two other notebooks to demonstrate how to use scd type 1 and scd type 2.
 1. Generate-Append-Only-Delta-Sources: a notebook that simulates data ingestion in an append only delta table.
 2. DLT Tables and Views: a notebook that includes all the code that creates the dlt tables.
+These two notebooks are designed to be used in a separate dlt pipeline.
 
 ## Notebooks
 
