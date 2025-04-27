@@ -15,7 +15,7 @@ This notebook generates sample data for orders, customers, and products, and sav
 - **Customers Data**: Generates 1000 unique customers with columns such as `customer_id`, `customer_name`, `email`, `phone_number`, `address`, and `timestamp`.
 - **Products Data**: Generates 100 unique products with columns such as `product_id`, `product_name`, `category`, `price`, and `brand`.
 
-### 2. Generate Raw Views - Notebook
+### 2. Generate Views - AutoLoader - Notebook
 
 This notebook sets up Delta Live Tables (DLT) to create views from JSON data stored in Azure storage. It reads streaming data and creates raw tables for orders, products, and customers using autoloader.
 
@@ -71,6 +71,7 @@ This notebook creates a gold view by joining the silver tables for orders, custo
 
 4. **Create a pipeline**:
 - Under Delta Live Tables, create a pipeline by adding all the notebooks listed above.
+- Under **Add Configuration**, ensure you have configurations including catalog_name, schema_name, volume_name, and num_records
 
 Conclusion
 This repository provides a simple and clear example of using Delta Live Tables in Databricks to manage and process data in a configuration-driven manner. Feel free to explore and modify the notebooks to suit your needs.
