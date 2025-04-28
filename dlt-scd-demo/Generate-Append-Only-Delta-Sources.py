@@ -12,12 +12,9 @@ num_products = 10
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, rand, round, expr, current_timestamp
 from datetime import datetime
 import uuid
-
-spark = SparkSession.builder.getOrCreate()
 
 catalog = "devcatalog"
 schema = "dlt"
@@ -52,12 +49,9 @@ df.createOrReplaceTempView('Orders')
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import col, expr, pandas_udf, split, concat_ws, lit, lower, current_timestamp
 import random
 import pandas as pd
-
-spark = SparkSession.builder.getOrCreate()
 
 catalog = "devcatalog"
 schema = "dlt"
@@ -120,12 +114,9 @@ customer_df.createOrReplaceTempView('Customers')
 
 # COMMAND ----------
 
-from pyspark.sql import SparkSession
 from pyspark.sql.functions import current_timestamp
 import random
 from datetime import datetime
-
-spark = SparkSession.builder.getOrCreate()
 
 catalog = "devcatalog"
 schema = "dlt"
