@@ -17,6 +17,14 @@ steps:
     echo "Debug: listing repo files..."
     ls -R
   displayName: 'Debug: List Files in Workspace'
+- script: |
+    echo "Showing root contents..."
+    ls -la
+
+    echo "Checking deltaliverepo folder..."
+    ls -la deltaliverepo
+  displayName: 'Debug: Check Folder Structure'
+  continueOnError: true
 
 - script: |
     echo "Deploying all notebooks..."
