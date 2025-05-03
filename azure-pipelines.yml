@@ -21,6 +21,7 @@ steps:
 
     echo "Authenticated with Databricks!"
   displayName: 'Install and Authenticate Databricks CLI'
+  
 - script: |
     echo "Deploying notebooks to QA workspace..."
 
