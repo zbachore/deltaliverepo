@@ -25,6 +25,6 @@ steps:
 - script: |
     echo "Deploying notebooks to QA workspace..."
 
-    databricks workspace import_dir deltalivepro /Shared/QA/deltaliverepro --overwrite
+    databricks workspace import_dir deltaliverepo /Shared/QA/deltaliverepo --overwrite
   displayName: 'Deploy Notebooks to QA Workspace'
 
