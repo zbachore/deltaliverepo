@@ -7,10 +7,9 @@ steps:
 
 - script: |
     pip install databricks-cli --upgrade
-    databricks configure --token <<EOF
-    $(DATABRICKS_HOST)
-    $(DATABRICKS_TOKEN)
-    EOF
+    databricks configure --token --host "$(DATABRICKS_HOST)" --token "$(DATABRICKS_TOKEN)"
+
+
   displayName: 'Install and Authenticate Databricks CLI'
 
 - script: |
