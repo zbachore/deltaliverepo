@@ -21,3 +21,9 @@ steps:
 
     echo "Authenticated with Databricks!"
   displayName: 'Install and Authenticate Databricks CLI'
+- script: |
+    echo "Deploying notebooks to QA workspace..."
+
+    databricks workspace import_dir deltalivepro /Shared/QA/deltalivepro --overwrite
+  displayName: 'Deploy Notebooks to QA Workspace'
+
