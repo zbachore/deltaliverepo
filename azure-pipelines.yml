@@ -1,13 +1,6 @@
-trigger:
-- none  # or set to 'main' or 'develop' when you're ready
-
-pool:
-  vmImage: 'ubuntu-latest'
-
-variables:
-- group: Databricks-Dev-Auth
-
 steps:
+- checkout: self  # 👈 Ensures the repo content is pulled
+
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.x'
@@ -18,13 +11,14 @@ steps:
     $(DATABRICKS_HOST)
     $(DATABRICKS_TOKEN)
     EOF
-
-    echo "Authenticated with Databricks!"
   displayName: 'Install and Authenticate Databricks CLI'
-  
-- script: |
-    echo "Deploying notebooks to QA workspace..."
 
+- script: |
+    echo "Debug: listing repo files..."
+    ls -R
+  displayName: 'Debug: List Files in Workspace'
+
+- script: |
+    echo "Deploying all notebooks..."
     databricks workspace import_dir deltaliverepo /Shared/QA/deltaliverepo --overwrite
   displayName: 'Deploy Notebooks to QA Workspace'
-
