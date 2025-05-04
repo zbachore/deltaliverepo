@@ -15,6 +15,12 @@ import pandas as pd
 
 # COMMAND ----------
 
+volume_name = spark.conf.get("volume_name")
+catalog_name = spark.conf.get("catalog_name")
+schema_name = spark.conf.get("schema_name")
+
+# COMMAND ----------
+
 # The volume_name value should be set in the dlt pipeline settings under configurations:
 volume_name = spark.conf.get("volume_name")
 your_volume = f"{volume_name}"
