@@ -1,40 +1,29 @@
+trigger:
+- none
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+- group: Databricks-Dev-Auth  # This variable group should contain DATABRICKS_HOST and DATABRICKS_TOKEN
+
 steps:
-- checkout: self  # 👈 Ensures the repo content is pulled
+- checkout: self
 
 - task: UsePythonVersion@0
   inputs:
     versionSpec: '3.x'
 
 - script: |
-    pip uninstall -y databricks-cli
     curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
     databricks --version
-  displayName: 'Install Databricks CLI v2.x'
-
-- script: |
-    export DATABRICKS_CONFIG_PROFILE=default
-    export DATABRICKS_HOST="$(DATABRICKS_HOST)"
-    export DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)"
-    echo "Authentication complete"
-  displayName: 'Authenticate Databricks CLI via Environment Variables'
-
-
-- script: |
-    echo "Showing root contents..."
-    ls -la
-
-    echo "Checking dlt-config-demo folder..."
-    ls -la dlt-config-demo
-
-    echo "Checking dlt-scd-demo folder..."
-    ls -la dlt-scd-demo
-  displayName: 'Debug: Check Folder Structure'
-  continueOnError: true
+  displayName: 'Install Databricks CLI v2'
 
 - script: |
     echo "Deploying notebooks to QA..."
     databricks workspace import-dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
     databricks workspace import-dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
   displayName: 'Deploy Notebooks to QA Workspace'
-
-
+  env:
+    DATABRICKS_HOST: $(DATABRICKS_HOST)
+    DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
