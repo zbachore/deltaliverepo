@@ -99,6 +99,7 @@ stages:
 
 
 
+
           databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
