@@ -9,7 +9,8 @@
   "schema": "dlt",
   "configuration": {
     "catalog_name": "qacatalog",
-    "schema_name": "dlt"
+    "schema_name": "dlt",
+    "volume_name": "uploads"
   },
   "libraries": [
     {
