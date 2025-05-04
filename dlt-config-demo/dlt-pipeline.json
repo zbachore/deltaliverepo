@@ -8,7 +8,7 @@
   "catalog": "qacatalog",
   "schema": "dlt",
   "configuration": {
-    "catalog_name": "qacatalog",
+    "catalog_name": "devcatalog",
     "schema_name": "dlt",
     "volume_name": "/Volumes/qacatalog/dlt/files",
     "num_records": "100"
