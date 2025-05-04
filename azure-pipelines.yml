@@ -16,15 +16,14 @@ steps:
 
 
 - script: |
-    echo "Debug: listing repo files..."
-    ls -R
-  displayName: 'Debug: List Files in Workspace'
-- script: |
     echo "Showing root contents..."
     ls -la
 
-    echo "Checking deltaliverepo folder..."
-    ls -la deltaliverepo
+    echo "Checking dlt-config-demo folder..."
+    ls -la dlt-config-demo
+
+    echo "Checking dlt-scd-demo folder..."
+    ls -la dlt-scd-demo
   displayName: 'Debug: Check Folder Structure'
   continueOnError: true
 
