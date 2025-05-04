@@ -67,12 +67,19 @@ stages:
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
+          jq --arg catalog "$(CATALOG_NAME)" \
+            '.catalog = $catalog | .configuration.catalog_name = $catalog' \
+            dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+          databricks pipelines create --json @dlt-config-demo/dlt-pipeline-temp.json
         else
           echo "Pipeline exists. Updating it..."
-          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
+          jq --arg catalog "$(CATALOG_NAME)" \
+            '.catalog = $catalog | .configuration.catalog_name = $catalog' \
+            dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline-temp.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+        CATALOG_NAME: $(CATALOG_NAME)
