@@ -53,8 +53,8 @@ stages:
 
     - script: |
         echo "Deploying notebooks to QA..."
-        databricks workspace import-dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
-        databricks workspace import-dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
+        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
+        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
       displayName: 'Deploy Notebooks to QA Workspace'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
