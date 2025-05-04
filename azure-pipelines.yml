@@ -62,36 +62,47 @@ stages:
 
     - script: |
         echo "Deploying DLT pipeline to QA..."
-
         sudo apt-get update && sudo apt-get install -y jq
 
-        PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+        PIPELINE_NAME="DLT-Pipeline-Configuration-Driven"
+        PIPELINE_FILE=dlt-config-demo/dlt-pipeline.json
+        TEMP_FILE=dlt-config-demo/dlt-pipeline-updated.json
+
+        PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r --arg name "$PIPELINE_NAME" '.[] | select(.name == $name) | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
 
-          jq 'del(.data_sampling) | .catalog = "qacatalog" | .configuration.catalog_name = "qacatalog"' \
-            dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+          jq '
+            del(.data_sampling) 
+            | .catalog = "qacatalog" 
+            | .configuration.catalog_name = "qacatalog" 
+            | .configuration.volume_name = "/Volumes/qacatalog/dlt/files"
+          ' "$PIPELINE_FILE" > "$TEMP_FILE"
 
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline-temp.json
+          databricks pipelines create --json @"$TEMP_FILE"
         else
           echo "Pipeline exists. Updating it..."
 
-          # Get current pipeline definition from Databricks (includes the ID)
-          cp dlt-config-demo/dlt-pipeline.json dlt-config-demo/dlt-pipeline-existing.json
+          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/dlt-pipeline-existing.json
 
-          # Modify only the catalog-related fields
           jq --arg id "$PIPELINE_ID" '
-            del(.data_sampling)
+            del(
+              .creator_user_name,
+              .last_modified,
+              .last_modified_by,
+              .run_as_user_name,
+              .latest_updates,
+              .spec,
+              .state
+            )
             | .id = $id
             | .catalog = "qacatalog"
             | .configuration.catalog_name = "qacatalog"
-          ' dlt-config-demo/dlt-pipeline-existing.json > dlt-config-demo/dlt-pipeline-updated.json
+            | .configuration.volume_name = "/Volumes/qacatalog/dlt/files"
+          ' dlt-config-demo/dlt-pipeline-existing.json > "$TEMP_FILE"
 
-
-          cat dlt-config-demo/dlt-pipeline-updated.json
-          databricks pipelines update --json @dlt-config-demo/dlt-pipeline-updated.json
-
+          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @"$TEMP_FILE"
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
