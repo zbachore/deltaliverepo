@@ -63,10 +63,6 @@ stages:
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
-        sudo apt-get update && sudo apt-get install -y jq
-
-        PIPELINE_NAME="DLT-Pipeline-Configuration-Driven"
-
         PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
@@ -74,28 +70,9 @@ stages:
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
         else
           echo "Pipeline exists. Updating it..."
-
-          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/existing.json
-
-          jq --arg id "$PIPELINE_ID" --arg catalog "$(CATALOG_NAME)" '
-            del(
-              .creator_user_name,
-              .last_modified,
-              .last_modified_by,
-              .run_as_user_name,
-              .latest_updates,
-              .spec,
-              .state
-            )
-            | .id = $id
-            | .catalog = $catalog
-            | .configuration.catalog_name = $catalog
-          ' dlt-config-demo/existing.json > dlt-config-demo/updated.json
-
-          databricks pipelines update --json @dlt-config-demo/updated.json
+          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-        CATALOG_NAME: $(CATALOG_NAME)
