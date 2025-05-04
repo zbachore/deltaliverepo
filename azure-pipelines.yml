@@ -4,26 +4,58 @@ trigger:
 pool:
   vmImage: 'ubuntu-latest'
 
-variables:
-- group: Databricks-QA  # This variable group should contain DATABRICKS_HOST and DATABRICKS_TOKEN
+stages:
+- stage: DeployToDev
+  displayName: 'Deploy Notebooks to Dev'
+  variables:
+  - group: Databricks-Dev
+  jobs:
+  - job: DeployDev
+    steps:
+    - checkout: self
 
-steps:
-- checkout: self
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
 
-- task: UsePythonVersion@0
-  inputs:
-    versionSpec: '3.x'
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
+        databricks --version
+      displayName: 'Install Databricks CLI v2'
 
-- script: |
-    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
-    databricks --version
-  displayName: 'Install Databricks CLI v2'
+    - script: |
+        echo "Deploying notebooks to Dev..."
+        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
+        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
+      displayName: 'Deploy Notebooks to Dev Workspace'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-- script: |
-    echo "Deploying notebooks to QA..."
-    databricks workspace import-dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
-    databricks workspace import-dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
-  displayName: 'Deploy Notebooks to QA Workspace'
-  env:
-    DATABRICKS_HOST: $(DATABRICKS_HOST)
-    DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+- stage: DeployToQA
+  displayName: 'Deploy Notebooks to QA'
+  dependsOn: DeployToDev
+  variables:
+  - group: Databricks-QA
+  jobs:
+  - job: DeployQA
+    steps:
+    - checkout: self
+
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+
+    - script: |
+        curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
+        databricks --version
+      displayName: 'Install Databricks CLI v2'
+
+    - script: |
+        echo "Deploying notebooks to QA..."
+        databricks workspace import-dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
+        databricks workspace import-dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
+      displayName: 'Deploy Notebooks to QA Workspace'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
