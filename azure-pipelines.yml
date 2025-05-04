@@ -96,12 +96,8 @@ stages:
             | .configuration.catalog_name = "qacatalog"
           ' dlt-config-demo/dlt-pipeline-existing.json > dlt-config-demo/dlt-pipeline-updated.json
 
+          databricks pipelines update --json @dlt-config-demo/dlt-pipeline-updated.json
 
-
-
-
-
-          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
