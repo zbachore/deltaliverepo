@@ -7,14 +7,10 @@ steps:
 
 - script: |
     pip install databricks-cli --upgrade
-    databricks configure --token <<EOF
-    $(DATABRICKS_HOST)
-    $(DATABRICKS_TOKEN)
-    EOF
-
-
-
-  displayName: 'Install and Authenticate Databricks CLI'
+    export DATABRICKS_HOST=$(DATABRICKS_HOST)
+    export DATABRICKS_TOKEN=$(DATABRICKS_TOKEN)
+    echo "Authentication complete"
+  displayName: 'Authenticate Databricks CLI via Environment Variables'
 
 - script: |
     echo "Debug: listing repo files..."
