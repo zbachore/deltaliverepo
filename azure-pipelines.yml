@@ -87,7 +87,7 @@ stages:
           echo "Pipeline exists. Updating it..."
 
           # Get current pipeline definition from Databricks (includes the ID)
-          databricks pipelines get --pipeline-id "$PIPELINE_ID" --output json > dlt-config-demo/dlt-pipeline-existing.json
+          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/dlt-pipeline-existing.json
 
           # Modify only the catalog-related fields
           jq '.catalog = "qacatalog" | .configuration.catalog_name = "qacatalog"' \
