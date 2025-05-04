@@ -105,6 +105,7 @@ stages:
 
         echo "Updating pipeline..."
         databricks pipelines update --pipeline-id "$PIPELINE_ID" --json "@$TEMP_FILE.cleaned"
+
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
