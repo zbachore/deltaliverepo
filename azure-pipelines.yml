@@ -67,18 +67,16 @@ stages:
 
         PIPELINE_NAME="DLT-Pipeline-Configuration-Driven"
 
-        PIPELINE_ID=$(databricks pipelines list --output json | jq -r --arg name "$PIPELINE_NAME" '.[] | select(.name==$name) | .pipeline_id')
+        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
-          echo "Pipeline not found. Creating new..."
+          echo "Pipeline not found. Creating it..."
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
         else
-          echo "Pipeline exists. Updating..."
+          echo "Pipeline exists. Updating it..."
 
-          # Download existing pipeline definition
-          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/dlt-pipeline-existing.json
+          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/existing.json
 
-          # Sanitize + update catalog fields
           jq --arg id "$PIPELINE_ID" --arg catalog "$(CATALOG_NAME)" '
             del(
               .creator_user_name,
@@ -92,11 +90,11 @@ stages:
             | .id = $id
             | .catalog = $catalog
             | .configuration.catalog_name = $catalog
-          ' dlt-config-demo/dlt-pipeline-existing.json > dlt-config-demo/dlt-pipeline-updated.json
+          ' dlt-config-demo/existing.json > dlt-config-demo/updated.json
 
-          # Perform update
-          databricks pipelines update --json @dlt-config-demo/dlt-pipeline-updated.json
+          databricks pipelines update --json @dlt-config-demo/updated.json
         fi
+
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
