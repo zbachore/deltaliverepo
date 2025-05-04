@@ -72,7 +72,8 @@ stages:
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
-        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+        PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
