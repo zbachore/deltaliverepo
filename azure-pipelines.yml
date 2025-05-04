@@ -90,11 +90,12 @@ stages:
               .latest_updates,
               .spec,
               .state
-            )
-            | .id = $id
-            | .catalog = "qacatalog"
+            ) 
+            | .id = $id 
+            | .catalog = "qacatalog" 
             | .configuration.catalog_name = "qacatalog"
           ' dlt-config-demo/dlt-pipeline-existing.json > dlt-config-demo/dlt-pipeline-updated.json
+
 
 
 
