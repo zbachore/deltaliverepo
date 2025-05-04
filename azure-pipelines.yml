@@ -7,6 +7,7 @@ steps:
 
 - script: |
     pip install databricks-cli --upgrade
+    pip install databricks-sdk
     export DATABRICKS_HOST="$(DATABRICKS_HOST)"
     export DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)"
     echo "Authentication complete"
