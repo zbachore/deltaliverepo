@@ -81,8 +81,11 @@ stages:
           databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/dlt-pipeline-existing.json
 
           # Modify only the catalog-related fields
-          jq '.catalog = "qacatalog" | .configuration.catalog_name = "qacatalog"' \
+          jq 'del(.creator_user_name, .last_modified, .last_modified_by, .run_as_user_name) 
+              | .catalog = "qacatalog" 
+              | .configuration.catalog_name = "qacatalog"' \
             dlt-config-demo/dlt-pipeline-existing.json > dlt-config-demo/dlt-pipeline-updated.json
+
 
           databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
         fi
