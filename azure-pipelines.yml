@@ -27,9 +27,8 @@ steps:
   continueOnError: true
 
 - script: |
-    echo "Deploying all notebooks..."
-    databricks workspace import_dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
-    databricks workspace import_dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
-
+    echo "Deploying notebooks to QA..."
+    databricks workspace import-dir --profile default --overwrite dlt-config-demo /Shared/QA/dlt-config-demo
+    databricks workspace import-dir --profile default --overwrite dlt-scd-demo /Shared/QA/dlt-scd-demo
   displayName: 'Deploy Notebooks to QA Workspace'
 
