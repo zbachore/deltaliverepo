@@ -59,8 +59,6 @@ from pyspark.sql.functions import col, expr, pandas_udf, split, concat_ws, lit, 
 import random
 import pandas as pd
 
-catalog = "devcatalog"
-schema = "dlt"
 num_customers = 10  # Always insert 10 rows per run
 
 # Lists of realistic names and addresses
@@ -124,8 +122,6 @@ from pyspark.sql.functions import current_timestamp
 import random
 from datetime import datetime
 
-catalog = "devcatalog"
-schema = "dlt"
 num_products = 10  # Always insert 10 rows per run
 
 # Lists of product names, categories, and realistic brand names
