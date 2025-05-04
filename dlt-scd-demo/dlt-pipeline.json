@@ -1,0 +1,27 @@
+{
+  "name": "DLT-Refresh-SCD-Tables-Views",
+  "development": true,
+  "continuous": false,
+  "channel": "CURRENT",
+  "photon": true,
+  "serverless": true,
+  "catalog": "qacatalog",
+  "schema": "dlt",
+  "configuration": {
+    "catalog_name": "qacatalog",
+    "schema_name": "dlt"
+  },
+  "libraries": [
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-scd-demo/Generate-Append-Only-Delta-Sources"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-scd-demo/DLT Tables and Views"
+      }
+    }
+  ],
+  "data_sampling": false
+}
