@@ -33,7 +33,8 @@ steps:
 
 - script: |
     echo "Deploying notebooks to QA..."
-    databricks workspace import-dir --profile default --overwrite dlt-config-demo /Shared/QA/dlt-config-demo
-    databricks workspace import-dir --profile default --overwrite dlt-scd-demo /Shared/QA/dlt-scd-demo
+    databricks workspace import-dir dlt-config-demo /Shared/QA/dlt-config-demo --overwrite
+    databricks workspace import-dir dlt-scd-demo /Shared/QA/dlt-scd-demo --overwrite
   displayName: 'Deploy Notebooks to QA Workspace'
+
 
