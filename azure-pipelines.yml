@@ -67,7 +67,7 @@ stages:
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json-file dlt-config-demo/dlt-pipeline.json
+          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
         else
           echo "Pipeline exists. Updating it..."
           databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
