@@ -1,0 +1,44 @@
+{
+  "name": "DLT-Pipeline-Configuration-Driven",
+  "development": true,
+  "continuous": false,
+  "channel": "CURRENT",
+  "photon": true,
+  "serverless": true,
+  "catalog": "qacatalog",
+  "schema": "dlt",
+  "configuration": {
+    "catalog_name": "qacatalog",
+    "schema_name": "dlt",
+    "volume_name": "/Volumes/qacatalog/dlt/files",
+    "num_records": "100"
+  },
+  "libraries": [
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-config-demo/generate sample data"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-config-demo/Generate Views - AutoLoader"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-config-demo/Load Bronze"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-config-demo/Load Silver"
+      }
+    },
+    {
+      "notebook": {
+        "path": "/Shared/DLT/dlt-config-demo/Gold View"
+      }
+    }
+  ],
+  "data_sampling": false
+}
