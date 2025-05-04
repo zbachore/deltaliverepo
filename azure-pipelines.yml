@@ -74,12 +74,13 @@ stages:
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it with devcatalog first..."
-          databricks pipelines create --json "@$PIPELINE_FILE"
-          echo "Created successfully. Now retrieving to update catalog..."
-
-          # Get the new ID
-          PIPELINE_ID=$(databricks pipelines list --output json | jq -r ".[] | select(.name==\"$PIPELINE_NAME\") | .pipeline_id")
+          
+          # Capture pipeline_id directly from the create response
+          PIPELINE_ID=$(databricks pipelines create --json "@$PIPELINE_FILE" --output json | jq -r '.pipeline_id')
+          
+          echo "Created successfully. New pipeline ID: $PIPELINE_ID"
         fi
+
 
         echo "Pipeline ID: $PIPELINE_ID"
 
