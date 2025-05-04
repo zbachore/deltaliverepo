@@ -6,8 +6,12 @@ steps:
     versionSpec: '3.x'
 
 - script: |
-    pip install databricks-cli --upgrade
-    pip install databricks-sdk
+    pip uninstall -y databricks-cli
+    curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
+    databricks --version
+  displayName: 'Install Databricks CLI v2.x'
+
+- script: |
     export DATABRICKS_CONFIG_PROFILE=default
     export DATABRICKS_HOST="$(DATABRICKS_HOST)"
     export DATABRICKS_TOKEN="$(DATABRICKS_TOKEN)"
