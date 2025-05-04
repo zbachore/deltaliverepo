@@ -61,15 +61,6 @@ stages:
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     - script: |
-        echo "Preparing DLT pipeline JSON with QA catalog name..."
-
-        sudo apt-get update && sudo apt-get install -y jq
-
-        jq '.catalog = "qacatalog" | .configuration.catalog_name = "qacatalog"' \
-          dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
-      displayName: 'Adjust catalog_name for QA'
-
-    - script: |
         echo "Deploying DLT pipeline to QA..."
 
         sudo apt-get update && sudo apt-get install -y jq
