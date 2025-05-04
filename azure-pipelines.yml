@@ -62,22 +62,29 @@ stages:
 
     - script: |
         echo "Deploying DLT pipeline to QA..."
-        
+
         sudo apt-get update && sudo apt-get install -y jq
 
         PIPELINE_NAME="DLT-Pipeline-Configuration-Driven"
+        PIPELINE_FILE="dlt-config-demo/dlt-pipeline.json"
+        TEMP_FILE="dlt-config-demo/dlt-pipeline-updated.json"
+        CATALOG_NAME="$(CATALOG_NAME)"
 
-        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+        PIPELINE_ID=$(databricks pipelines list --output json | jq -r --arg name "$PIPELINE_NAME" '.[] | select(.name==$name) | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
+          jq --arg catalog "$CATALOG_NAME" '
+            del(.data_sampling)
+            | .catalog = $catalog
+            | .configuration.catalog_name = $catalog
+          ' "$PIPELINE_FILE" > "$TEMP_FILE"
+          databricks pipelines create --json @"$TEMP_FILE"
         else
           echo "Pipeline exists. Updating it..."
+          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/current.json
 
-          databricks pipelines get "$PIPELINE_ID" --output json > dlt-config-demo/existing.json
-
-          jq --arg id "$PIPELINE_ID" --arg catalog "$(CATALOG_NAME)" '
+          jq --arg id "$PIPELINE_ID" --arg catalog "$CATALOG_NAME" '
             del(
               .creator_user_name,
               .last_modified,
@@ -90,11 +97,10 @@ stages:
             | .id = $id
             | .catalog = $catalog
             | .configuration.catalog_name = $catalog
-          ' dlt-config-demo/existing.json > dlt-config-demo/updated.json
+          ' dlt-config-demo/current.json > "$TEMP_FILE"
 
-          databricks pipelines update --json @dlt-config-demo/updated.json
+          databricks pipelines update --json @"$TEMP_FILE"
         fi
-
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
