@@ -12,12 +12,18 @@ num_products = 10
 
 # COMMAND ----------
 
+volume_name = spark.conf.get("volume_name")
+catalog_name = spark.conf.get("catalog_name")
+schema_name = spark.conf.get("schema_name")
+
+# COMMAND ----------
+
 from pyspark.sql.functions import col, rand, round, expr, current_timestamp
 from datetime import datetime
 import uuid
 
-catalog = "devcatalog"
-schema = "dlt"
+catalog = catalog_name
+schema = schema_name
 num_records = 10  # Always insert 10 rows per run
 
 # Generate the sample data
