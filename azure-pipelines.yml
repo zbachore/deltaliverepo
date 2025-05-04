@@ -59,3 +59,20 @@ stages:
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
+    - script: |
+        echo "Deploying DLT pipeline to QA..."
+
+        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+
+        if [ -z "$PIPELINE_ID" ]; then
+          echo "Pipeline not found. Creating it..."
+          databricks pipelines create --json-file dlt-config-demo/dlt-pipeline.json
+        else
+          echo "Pipeline exists. Updating it..."
+          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
+        fi
+      displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
