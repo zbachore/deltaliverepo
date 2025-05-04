@@ -63,16 +63,49 @@ stages:
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
-        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+        # Install jq
+        sudo apt-get update && sudo apt-get install -y jq
+
+        PIPELINE_NAME="DLT-Pipeline-Configuration-Driven"
+        PIPELINE_FILE="dlt-config-demo/dlt-pipeline.json"
+        TEMP_FILE="dlt-config-demo/dlt-pipeline-updated.json"
+
+        PIPELINE_ID=$(databricks pipelines list --output json | jq -r ".[] | select(.name==\"$PIPELINE_NAME\") | .pipeline_id")
 
         if [ -z "$PIPELINE_ID" ]; then
-          echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
-        else
-          echo "Pipeline exists. Updating it..."
-          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
+          echo "Pipeline not found. Creating it with devcatalog first..."
+          databricks pipelines create --json "@$PIPELINE_FILE"
+          echo "Created successfully. Now retrieving to update catalog..."
+
+          # Get the new ID
+          PIPELINE_ID=$(databricks pipelines list --output json | jq -r ".[] | select(.name==\"$PIPELINE_NAME\") | .pipeline_id")
         fi
+
+        echo "Pipeline ID: $PIPELINE_ID"
+
+        echo "Downloading current pipeline definition..."
+        databricks pipelines get "$PIPELINE_ID" --output json > "$TEMP_FILE"
+
+        echo "Sanitizing and updating catalog info..."
+        jq --arg id "$PIPELINE_ID" '
+          del(
+            .creator_user_name,
+            .last_modified,
+            .last_modified_by,
+            .run_as_user_name,
+            .latest_updates,
+            .spec,
+            .state
+          ) 
+          | .id = $id 
+          | .catalog = "qacatalog" 
+          | .configuration.catalog_name = "qacatalog"
+        ' "$TEMP_FILE" > "$TEMP_FILE.cleaned"
+
+        echo "Updating pipeline..."
+        databricks pipelines update --pipeline-id "$PIPELINE_ID" --json "@$TEMP_FILE.cleaned"
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
