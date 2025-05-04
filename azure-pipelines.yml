@@ -61,16 +61,25 @@ stages:
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     - script: |
+        echo "Preparing DLT pipeline JSON with QA catalog name..."
+
+        sudo apt-get update && sudo apt-get install -y jq
+
+        jq '.catalog = "qacatalog" | .configuration.catalog_name = "qacatalog"' \
+          dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+      displayName: 'Adjust catalog_name for QA'
+
+    - script: |
         echo "Deploying DLT pipeline to QA..."
 
         PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
+          databricks pipelines create --json @dlt-config-demo/dlt-pipeline-temp.json
         else
           echo "Pipeline exists. Updating it..."
-          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
+          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-temp.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
