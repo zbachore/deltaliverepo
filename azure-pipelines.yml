@@ -78,7 +78,7 @@ stages:
         python3 -c "
         import json
 
-        file_path = 'dlt-config-demo/dlt-pipeline.json'
+        file_path = '/Workspace/Shared/DLT/dlt-config-demo/dlt-pipeline.json'
         with open(file_path, 'r') as f:
             content = f.read()
         content = content.replace('devcatalog', '$CATALOG_NAME')
