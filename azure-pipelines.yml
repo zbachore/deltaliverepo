@@ -86,6 +86,8 @@ stages:
 
         PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
 
+        echo "Found PIPELINE_ID: $PIPELINE_ID"
+
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
@@ -97,7 +99,6 @@ stages:
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-
 
     - script: |
         echo "Deploying notebooks to QA..."
