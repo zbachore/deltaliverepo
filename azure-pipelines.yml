@@ -78,11 +78,16 @@ stages:
 
         python3 -c "
         import json
+        import os
+
+        catalog = os.environ['CATALOG_NAME']
         with open('dlt-config-demo/dlt-pipeline.json', 'r+') as f:
             data = json.load(f)
-            data['catalog'] = '${CATALOG_NAME}'
+            data['catalog'] = catalog
             if 'configuration' in data:
-                data['configuration']['catalog_name'] = '${CATALOG_NAME}'
+                data['configuration']['catalog_name'] = catalog
+                if 'volume_name' in data['configuration']:
+                    data['configuration']['volume_name'] = f'/Volumes/{catalog}/dlt/files'
             f.seek(0)
             json.dump(data, f, indent=2)
             f.truncate()
