@@ -63,12 +63,20 @@ stages:
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
+    - script: |
+        echo "Deploying notebooks to QA..."
+        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
+        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
+      displayName: 'Deploy Notebooks to QA Workspace'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+
     # Replace "devcatalog" with value of CATALOG_NAME using Python
     - script: |
         echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
         python3 -c "
         import json
-
         file_path = 'dlt-config-demo/dlt-pipeline.json'
         with open(file_path, 'r') as f:
             content = f.read()
@@ -108,34 +116,6 @@ stages:
           databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
         fi
       displayName: 'Create or Update DLT Pipeline in QA'
-      env:
-        DATABRICKS_HOST: $(DATABRICKS_HOST)
-        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-
-
-    - script: |
-        echo "Deploying notebooks to QA..."
-        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
-        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
-      displayName: 'Deploy Notebooks to QA Workspace'
-      env:
-        DATABRICKS_HOST: $(DATABRICKS_HOST)
-        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-
-    # Create or update the DLT pipeline in QA
-    - script: |
-        echo "Deploying DLT pipeline to QA..."
-
-        PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
-
-        if [ -z "$PIPELINE_ID" ]; then
-          echo "Pipeline not found. Creating it..."
-          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
-        else
-          echo "Pipeline exists. Updating it..."
-          databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline.json
-        fi
-      displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
