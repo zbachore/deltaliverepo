@@ -84,16 +84,6 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-    # Replace devcatalog with actual CATALOG_NAME in pipeline JSON before deployment
-    - script: |
-        echo "Replacing catalog name in pipeline JSON..."
-        sed -i "s/devcatalog/$(CATALOG_NAME)/g" dlt-config-demo/dlt-pipeline.json
-      displayName: 'Update catalog name in DLT pipeline JSON'
-      env:
-        CATALOG_NAME: $(CATALOG_NAME)
-
-
-
       # Replace devcatalog with the correct CATALOG_NAME in-place
     - script: |
         echo "Replacing catalog name in DLT pipeline JSON..."
