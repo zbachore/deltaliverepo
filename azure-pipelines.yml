@@ -1,28 +1,41 @@
+# Disable automatic pipeline triggers
 trigger:
 - none
 
+# Use the latest Ubuntu image for the pipeline agents
 pool:
   vmImage: 'ubuntu-latest'
 
+# ---------------------------
+# Stage 1: Deploy to Dev Workspace
+# ---------------------------
 stages:
 - stage: DeployToDev
   displayName: 'Deploy Notebooks to Dev'
+
+  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN) from the 'Databricks-Dev' variable group
   variables:
   - group: Databricks-Dev
+
   jobs:
   - job: DeployDev
     steps:
+    
+    # Checkout the GitHub repo
     - checkout: self
 
+    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
+    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
+    # Import notebooks into /Shared/DLT folder in the Dev Databricks workspace
     - script: |
         echo "Deploying notebooks to Dev..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -32,25 +45,36 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
+# ---------------------------
+# Stage 2: Deploy to QA Workspace
+# ---------------------------
 - stage: DeployToQA
   displayName: 'Deploy Notebooks to QA'
   dependsOn: DeployToDev
+
+  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN, CATALOG_NAME) from 'Databricks-QA' group
   variables:
   - group: Databricks-QA
+
   jobs:
   - job: DeployQA
     steps:
+
+    # Checkout the GitHub repo
     - checkout: self
 
+    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
+    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
+    # Import notebooks into /Shared/DLT folder in the QA Databricks workspace
     - script: |
         echo "Deploying notebooks to QA..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -60,22 +84,30 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
+    # Create or update the DLT pipeline in QA, injecting CATALOG_NAME dynamically from the variable group
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
+        # Look up existing pipeline ID by name
         PIPELINE_ID=$(databricks pipelines list --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
 
         if [ -z "$PIPELINE_ID" ]; then
           echo "Pipeline not found. Creating it..."
+
+          # Inject CATALOG_NAME into pipeline JSON before creation
           jq --arg catalog "$(CATALOG_NAME)" \
             '.catalog = $catalog | .configuration.catalog_name = $catalog' \
             dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline-temp.json
         else
           echo "Pipeline exists. Updating it..."
+
+          # Inject CATALOG_NAME into pipeline JSON before updating
           jq --arg catalog "$(CATALOG_NAME)" \
             '.catalog = $catalog | .configuration.catalog_name = $catalog' \
             dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
+
           databricks pipelines update --pipeline-id "$PIPELINE_ID" --json-file dlt-config-demo/dlt-pipeline-temp.json
         fi
       displayName: 'Deploy DLT Pipeline (Configuration-Driven)'
