@@ -13,29 +13,23 @@ stages:
 - stage: DeployToDev
   displayName: 'Deploy Notebooks to Dev'
 
-  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN) from the 'Databricks-Dev' variable group
   variables:
   - group: Databricks-Dev
 
   jobs:
   - job: DeployDev
     steps:
-    
-    # Checkout the GitHub repo
     - checkout: self
 
-    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
-    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
-    # Import notebooks into /Shared/DLT folder in the Dev Databricks workspace
     - script: |
         echo "Deploying notebooks to Dev..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -52,29 +46,23 @@ stages:
   displayName: 'Deploy Notebooks to QA'
   dependsOn: DeployToDev
 
-  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN, CATALOG_NAME) from 'Databricks-QA' group
   variables:
   - group: Databricks-QA
 
   jobs:
   - job: DeployQA
     steps:
-
-    # Checkout the GitHub repo
     - checkout: self
 
-    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
-    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
-    # Import notebooks into /Shared/DLT folder in the QA Databricks workspace
     - script: |
         echo "Deploying notebooks to QA..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -84,11 +72,20 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-    # Replace all instances of "devcatalog" regardless of indentation or quotes
+    # Replace "devcatalog" with value of CATALOG_NAME using Python
     - script: |
-        echo "Replacing catalog name in DLT pipeline JSON..."
-        sed -i "s/\"catalog_name\": \"devcatalog\"/\"catalog_name\": \"$(CATALOG_NAME)\"/g" dlt-config-demo/dlt-pipeline.json
-      displayName: 'Update catalog_name in DLT pipeline JSON'
+        echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
+        python3 -c "
+        import json
+
+        file_path = 'dlt-config-demo/dlt-pipeline.json'
+        with open(file_path, 'r') as f:
+            content = f.read()
+        content = content.replace('devcatalog', '$CATALOG_NAME')
+        with open(file_path, 'w') as f:
+            f.write(content)
+        "
+              displayName: 'Update catalog name using Python'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
 
@@ -109,4 +106,3 @@ stages:
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-        CATALOG_NAME: $(CATALOG_NAME)
