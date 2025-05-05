@@ -113,7 +113,9 @@ stages:
         with open(output_path, 'w') as f:
             json.dump(data, f)
         "
-        databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
+        # databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
+        databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline.json
+
         fi
       displayName: 'Create or Update DLT Pipeline in QA'
       env:
