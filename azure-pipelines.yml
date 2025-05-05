@@ -73,22 +73,20 @@ stages:
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     # Replace "devcatalog" with value of CATALOG_NAME using Python
-    # Replace "devcatalog" with value of CATALOG_NAME using Python
     - script: |
-        echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
+        echo "Replacing 'devcatalog' with value of CATALOG_NAME from environment using Python..."
         python3 -c "
-        import json
-
+        import os
         file_path = 'dlt-config-demo/dlt-pipeline.json'
         with open(file_path, 'r') as f:
             content = f.read()
-        content = content.replace('devcatalog', '$CATALOG_NAME')
+        content = content.replace('devcatalog', os.environ['CATALOG_NAME'])
         with open(file_path, 'w') as f:
             f.write(content)
         "
-      displayName: 'Update catalog name using Python'
-      env:
-        CATALOG_NAME: $(CATALOG_NAME)
+              displayName: 'Update catalog name using Python'
+              env:
+                CATALOG_NAME: $(CATALOG_NAME)
 
     # Create or update the DLT pipeline in QA using the modified JSON
     - script: |
