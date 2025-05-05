@@ -63,22 +63,13 @@ stages:
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
-    - script: |
-        echo "Deploying notebooks to QA..."
-        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
-        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
-      displayName: 'Deploy Notebooks to QA Workspace'
-      env:
-        DATABRICKS_HOST: $(DATABRICKS_HOST)
-        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
-
     # Replace "devcatalog" with value of CATALOG_NAME using Python
     - script: |
         echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
         python3 -c "
         import json
 
-        file_path = '/Workspace/Shared/DLT/dlt-config-demo/dlt-pipeline.json'
+        file_path = 'dlt-config-demo/dlt-pipeline.json'
         with open(file_path, 'r') as f:
             content = f.read()
         content = content.replace('devcatalog', '$CATALOG_NAME')
@@ -88,6 +79,16 @@ stages:
       displayName: 'Update catalog name using Python'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
+
+
+    - script: |
+        echo "Deploying notebooks to QA..."
+        databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
+        databricks workspace import-dir dlt-scd-demo /Shared/DLT/dlt-scd-demo --overwrite
+      displayName: 'Deploy Notebooks to QA Workspace'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
     # Create or update the DLT pipeline in QA
     - script: |
