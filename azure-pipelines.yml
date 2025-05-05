@@ -84,11 +84,10 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-      # Replace devcatalog with the correct CATALOG_NAME in-place
+    # Replace all instances of "devcatalog" regardless of indentation or quotes
     - script: |
         echo "Replacing catalog name in DLT pipeline JSON..."
-        export CATALOG_NAME_ESCAPED=$(echo "$CATALOG_NAME" | sed 's/[\/&]/\\&/g')
-        sed -i "s/devcatalog/$CATALOG_NAME_ESCAPED/g" dlt-config-demo/dlt-pipeline.json
+        sed -i "s/\"catalog_name\": \"devcatalog\"/\"catalog_name\": \"$(CATALOG_NAME)\"/g" dlt-config-demo/dlt-pipeline.json
       displayName: 'Update catalog_name in DLT pipeline JSON'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
