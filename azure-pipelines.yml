@@ -100,7 +100,12 @@ stages:
             dlt-config-demo/dlt-pipeline.json > dlt-config-demo/dlt-pipeline-temp.json
           
           # Update the catalog_name value in the json file in the target workspace
-          jq --arg catalog "$(CATALOG_NAME)" '.catalog = $catalog | .configuration.catalog_name = $catalog' dlt-config-demo/dlt-pipeline.json > temp.json && mv temp.json dlt-config-demo/dlt-pipeline.json
+          jq --arg catalog "$(CATALOG_NAME)" '
+            .catalog = $catalog
+            | .configuration = (.configuration // {})       # ensure .configuration exists
+            | .configuration.catalog_name = $catalog
+          ' dlt-config-demo/dlt-pipeline.json > temp.json && mv temp.json dlt-config-demo/dlt-pipeline.json
+
 
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline-temp.json
         else
