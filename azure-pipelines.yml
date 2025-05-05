@@ -12,23 +12,30 @@ pool:
 stages:
 - stage: DeployToDev
   displayName: 'Deploy Notebooks to Dev'
+
+  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN) from the 'Databricks-Dev' variable group
   variables:
   - group: Databricks-Dev
 
   jobs:
   - job: DeployDev
     steps:
+    
+    # Checkout the GitHub repo
     - checkout: self
 
+    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
+    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
+    # Import notebooks into /Shared/DLT folder in the Dev Databricks workspace
     - script: |
         echo "Deploying notebooks to Dev..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -44,23 +51,30 @@ stages:
 - stage: DeployToQA
   displayName: 'Deploy Notebooks to QA'
   dependsOn: DeployToDev
+
+  # Load variables (e.g., DATABRICKS_HOST, DATABRICKS_TOKEN, CATALOG_NAME) from 'Databricks-QA' group
   variables:
   - group: Databricks-QA
 
   jobs:
   - job: DeployQA
     steps:
+
+    # Checkout the GitHub repo
     - checkout: self
 
+    # Use Python 3.x version for CLI tools
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '3.x'
 
+    # Install Databricks CLI v2 and verify installation
     - script: |
         curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
         databricks --version
       displayName: 'Install Databricks CLI v2'
 
+    # Import notebooks into /Shared/DLT folder in the QA Databricks workspace
     - script: |
         echo "Deploying notebooks to QA..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
@@ -70,39 +84,15 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-    # ----------------------------------------
-    # 🔧 Inject CATALOG_NAME into JSON in-place
-    # ----------------------------------------
+    # Replace devcatalog with actual CATALOG_NAME in pipeline JSON before deployment
     - script: |
-        echo "Replacing catalog_name in JSON file with value from variable group..."
-
-        python3 - <<EOF
-        import json
-        import os
-
-        catalog = os.environ["CATALOG_NAME"]
-        json_path = "dlt-config-demo/dlt-pipeline.json"
-
-        with open(json_path, "r") as f:
-            data = json.load(f)
-
-        data["catalog"] = catalog
-
-        # Ensure nested fields are set
-        if "configuration" not in data:
-            data["configuration"] = {}
-
-        data["configuration"]["catalog_name"] = catalog
-        data["configuration"]["volume_name"] = f"/Volumes/{catalog}/dlt/files"
-
-        # Save the updated JSON
-        with open(json_path, "w") as f:
-            json.dump(data, f, indent=2)
-        EOF
-      displayName: 'Update catalog_name in DLT JSON file'
+        echo "Replacing catalog name in pipeline JSON..."
+        sed -i "s/devcatalog/$(CATALOG_NAME)/g" dlt-config-demo/dlt-pipeline.json
+      displayName: 'Update catalog name in DLT pipeline JSON'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
 
+    # Create or update the DLT pipeline in QA
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
