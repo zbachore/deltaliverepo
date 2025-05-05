@@ -101,24 +101,12 @@ stages:
           databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
         else
           echo "Pipeline exists. Updating it..."
-
-          # Create a temp copy of JSON with injected pipeline_id
-        python3 -c "
-        import json
-        input_path = 'dlt-config-demo/dlt-pipeline.json'
-        output_path = 'dlt-config-demo/dlt-pipeline-updated.json'
-        with open(input_path) as f:
-            data = json.load(f)
-        with open(output_path, 'w') as f:
-            json.dump(data, f)
-        "
-        # databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline-updated.json
-        databricks pipelines update --pipeline-id "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline.json
-
+          databricks pipelines update "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline.json
         fi
       displayName: 'Create or Update DLT Pipeline in QA'
       env:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
         CATALOG_NAME: $(CATALOG_NAME)
+
 
