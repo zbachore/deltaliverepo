@@ -76,22 +76,29 @@ stages:
     - script: |
         echo "Replacing catalog_name in JSON file with value from variable group..."
 
-        python3 -c "
+        python3 - <<EOF
         import json
         import os
 
-        catalog = os.environ['CATALOG_NAME']
-        with open('dlt-config-demo/dlt-pipeline.json', 'r+') as f:
+        catalog = os.environ["CATALOG_NAME"]
+        json_path = "dlt-config-demo/dlt-pipeline.json"
+
+        with open(json_path, "r") as f:
             data = json.load(f)
-            data['catalog'] = catalog
-            if 'configuration' in data:
-                data['configuration']['catalog_name'] = catalog
-                if 'volume_name' in data['configuration']:
-                    data['configuration']['volume_name'] = f'/Volumes/{catalog}/dlt/files'
-            f.seek(0)
+
+        data["catalog"] = catalog
+
+        # Ensure nested fields are set
+        if "configuration" not in data:
+            data["configuration"] = {}
+
+        data["configuration"]["catalog_name"] = catalog
+        data["configuration"]["volume_name"] = f"/Volumes/{catalog}/dlt/files"
+
+        # Save the updated JSON
+        with open(json_path, "w") as f:
             json.dump(data, f, indent=2)
-            f.truncate()
-        "
+        EOF
       displayName: 'Update catalog_name in DLT JSON file'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
