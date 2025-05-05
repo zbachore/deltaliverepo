@@ -80,7 +80,6 @@ stages:
       env:
         CATALOG_NAME: $(CATALOG_NAME)
 
-
     - script: |
         echo "Deploying notebooks to QA..."
         databricks workspace import-dir dlt-config-demo /Shared/DLT/dlt-config-demo --overwrite
