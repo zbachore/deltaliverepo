@@ -84,9 +84,9 @@ stages:
         with open(file_path, 'w') as f:
             f.write(content)
         "
-              displayName: 'Update catalog name using Python'
-              env:
-                CATALOG_NAME: $(CATALOG_NAME)
+      displayName: 'Update catalog name using Python'
+      env:
+        CATALOG_NAME: $(CATALOG_NAME)
 
 
     # Create or update the DLT pipeline in QA using the modified JSON
