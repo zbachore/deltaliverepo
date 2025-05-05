@@ -85,7 +85,7 @@ stages:
         with open(file_path, 'w') as f:
             f.write(content)
         "
-              displayName: 'Update catalog name using Python'
+      displayName: 'Update catalog name using Python'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
 
