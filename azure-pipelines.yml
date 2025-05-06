@@ -67,13 +67,11 @@ stages:
     - script: |
         echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
         python3 -c "
-        import os
-
-        catalog = os.getenv('CATALOG_NAME')
+        import json
         for file_path in ['dlt-config-demo/dlt-pipeline.json', 'dlt-scd-demo/dlt-pipeline.json']:
             with open(file_path, 'r') as f:
                 content = f.read()
-            content = content.replace('devcatalog', catalog)
+            content = content.replace('devcatalog', '$CATALOG_NAME')
             with open(file_path, 'w') as f:
                 f.write(content)
         "
