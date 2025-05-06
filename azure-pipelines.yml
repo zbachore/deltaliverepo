@@ -75,7 +75,14 @@ stages:
         content = content.replace('devcatalog', '$CATALOG_NAME')
         with open(file_path, 'w') as f:
             f.write(content)
-        "
+                
+        file_path2 = 'dlt-scd-demo/dlt-pipeline.json'
+        with open(file_path2, 'r') as f:
+            content = f.read()
+        content = content.replace('devcatalog', '$CATALOG_NAME')
+        with open(file_path2, 'w') as f:
+            f.write(content)
+        "        
       displayName: 'Update catalog name using Python'
       env:
         CATALOG_NAME: $(CATALOG_NAME)
@@ -89,11 +96,32 @@ stages:
         DATABRICKS_HOST: $(DATABRICKS_HOST)
         DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
 
-    # Create or update the DLT pipeline in QA using the modified JSON
+    # Create or update the "DLT-Pipeline-Configuration-Driven" pipeline in QA using the modified JSON
     - script: |
         echo "Deploying DLT pipeline to QA..."
 
         PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r '.[] | select(.name=="DLT-Pipeline-Configuration-Driven") | .pipeline_id')
+
+        echo "Found PIPELINE_ID: $PIPELINE_ID"
+
+        if [ -z "$PIPELINE_ID" ]; then
+          echo "Pipeline not found. Creating it..."
+          databricks pipelines create --json @dlt-config-demo/dlt-pipeline.json
+        else
+          echo "Pipeline exists. Updating it..."
+          databricks pipelines update "$PIPELINE_ID" --json @dlt-config-demo/dlt-pipeline.json
+        fi
+      displayName: 'Create or Update DLT Pipeline in QA'
+      env:
+        DATABRICKS_HOST: $(DATABRICKS_HOST)
+        DATABRICKS_TOKEN: $(DATABRICKS_TOKEN)
+        CATALOG_NAME: $(CATALOG_NAME)
+
+    # Create or update the "DLT-Refresh-SCD-Tables-Views" pipeline in QA using the modified JSON
+    - script: |
+        echo "Deploying DLT pipeline to QA..."
+
+        PIPELINE_ID=$(databricks pipelines list-pipelines --output json | jq -r '.[] | select(.name=="DLT-Refresh-SCD-Tables-Views") | .pipeline_id')
 
         echo "Found PIPELINE_ID: $PIPELINE_ID"
 
