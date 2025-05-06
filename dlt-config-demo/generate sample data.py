@@ -18,16 +18,13 @@ import pandas as pd
 volume_name = spark.conf.get("volume_name")
 catalog_name = spark.conf.get("catalog_name")
 schema_name = spark.conf.get("schema_name")
-
-# COMMAND ----------
-
-# The volume_name value should be set in the dlt pipeline settings under configurations:
-volume_name = spark.conf.get("volume_name")
+num_records = int(spark.conf.get("num_records"))
 your_volume = f"{volume_name}"
-
+# The volume_name value should be set in the dlt pipeline settings under configurations:
 # The value of num_records should be set in the dlt pipeline settings under configurations:
 # This is just to allow me to change the number of records to create right from the dlt pipeline itself without opening the notebook
-num_records = int(spark.conf.get("num_records"))
+
+# COMMAND ----------
 
 # Number of records to generate
 num_records = num_records # for orders
