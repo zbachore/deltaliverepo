@@ -5,12 +5,12 @@
   "channel": "CURRENT",
   "photon": true,
   "serverless": true,
-  "catalog": "qacatalog",
+  "catalog": "devcatalog",
   "schema": "dlt",
   "configuration": {
-    "catalog_name": "qacatalog",
+    "catalog_name": "devcatalog",
     "schema_name": "dlt",
-    "volume_name": "uploads"
+    "volume_name": "/Volumes/qacatalog/dlt/uploads"
   },
   "libraries": [
     {
