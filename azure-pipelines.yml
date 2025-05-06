@@ -66,22 +66,21 @@ stages:
     # Replace "devcatalog" with value of CATALOG_NAME using Python
     - script: |
         echo "Replacing 'devcatalog' with '$CATALOG_NAME' using Python..."
-        cat <<EOF > replace_catalog.py
+        python3 -c "
         import os
 
-        catalog = os.getenv("CATALOG_NAME")
-        for file_path in ["dlt-config-demo/dlt-pipeline.json", "dlt-scd-demo/dlt-pipeline.json"]:
+        catalog = os.getenv('CATALOG_NAME')
+        for file_path in ['dlt-config-demo/dlt-pipeline.json', 'dlt-scd-demo/dlt-pipeline.json']:
             with open(file_path, 'r') as f:
                 content = f.read()
-            content = content.replace("devcatalog", catalog)
+            content = content.replace('devcatalog', catalog)
             with open(file_path, 'w') as f:
                 f.write(content)
-        EOF
+        "
+      displayName: 'Update catalog name using Python'
+      env:
+        CATALOG_NAME: $(CATALOG_NAME)
 
-                python3 replace_catalog.py
-              displayName: 'Update catalog name using Python'
-              env:
-                CATALOG_NAME: $(CATALOG_NAME)
 
     - script: |
         echo "Deploying notebooks to QA..."
