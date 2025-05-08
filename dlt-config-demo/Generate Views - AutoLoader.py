@@ -39,21 +39,21 @@ product_schema = StructType([
     StructField("timestamp", TimestampType(), True),
 ])
 
-def create_raw_tables(view_name, source):  
-    @dlt.table(
-        name=view_name,
-        table_properties={"quality": "raw"},
-        comment=f"Parsed streaming data for silver {view_name} records"
-    )
-    def create_raw_table():
-        return (
-            spark.readStream
-            .format("cloudFiles")
-            .option("cloudFiles.format", "json")
-            .schema(product_schema)   
-            .load(source)
-            # .dropDuplicates(["id"])   
-        )
+# def create_raw_tables(view_name, source):  
+#     @dlt.table(
+#         name=view_name,
+#         table_properties={"quality": "raw"},
+#         comment=f"Parsed streaming data for silver {view_name} records"
+#     )
+#     def create_raw_table():
+#         return (
+#             spark.readStream
+#             .format("cloudFiles")
+#             .option("cloudFiles.format", "json")
+#             .schema(product_schema)   
+#             .load(source)
+#             # .dropDuplicates(["id"])   
+#         )
 
 
 # COMMAND ----------
