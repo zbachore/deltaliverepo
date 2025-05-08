@@ -56,7 +56,7 @@ def create_raw_tables(view_name, source):
             .format("cloudFiles")
             .option("cloudFiles.format", "json")
             .load(source)
-            # .dropDuplicates(["id"])
+            .dropDuplicates(["id"])
             )
 
 # COMMAND ----------
