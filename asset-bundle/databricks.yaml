@@ -1,0 +1,68 @@
+bundle:
+  name: myproject
+
+variables:
+  catalog_name:
+    type: string
+  volume_path:
+    type: string
+  num_records:
+    type: string
+
+resources:
+  pipelines:
+    pipeline_dlt_pipeline_configuration_driven:
+      name: DLT-Pipeline-Configuration-Driven
+      catalog: ${var.catalog_name}
+      schema: dlt2
+      development: true
+      photon: true
+      serverless: true
+      configuration:
+        catalog_name: ${var.catalog_name}
+        schema_name: dlt2
+        volume_name: ${var.volume_path}
+        num_records: ${var.num_records}
+      libraries:
+        - notebook:
+            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/generate sample data
+        - notebook:
+            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Generate Views - AutoLoader
+        - notebook:
+            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Load Bronze
+        - notebook:
+            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Load Silver
+        - notebook:
+            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Gold View
+
+targets:
+  dev:
+    default: true
+    mode: development
+    workspace:
+      host: https://adb-1675377898901427.7.azuredatabricks.net
+      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/dev
+    variables:
+      catalog_name: devcatalog
+      volume_path: /Volumes/devcatalog/dlt/files
+      num_records: "100"
+
+  qa:
+    mode: development
+    workspace:
+      host: https://adb-1675377898901427.7.azuredatabricks.net
+      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/qa
+    variables:
+      catalog_name: qacatalog
+      volume_path: /Volumes/qacatalog/dlt/files
+      num_records: "500"
+
+  prod:
+    mode: production
+    workspace:
+      host: https://adb-1675377898901427.7.azuredatabricks.net
+      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/prod
+    variables:
+      catalog_name: prodcatalog
+      volume_path: /Volumes/prodcatalog/dlt/files
+      num_records: "1000"
