@@ -74,5 +74,10 @@ This notebook creates a materialized view by joining the silver tables for order
 - Under Delta Live Tables, create a pipeline by adding all the notebooks listed above.
 - Under **Add Configuration**, ensure you have configurations including catalog_name, schema_name, volume_name, and num_records
 
-Conclusion
+## FAQ and Additional Resources
+
+For frequently asked questions, including information about Microsoft Fabric and Azure Key Vault integration, please refer to the [FAQ.md](FAQ.md) file.
+
+## Conclusion
+
 This repository provides a simple and clear example of using Delta Live Tables in Databricks to manage and process data in a configuration-driven manner. Feel free to explore and modify the notebooks to suit your needs.
