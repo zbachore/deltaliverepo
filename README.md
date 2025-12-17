@@ -7,6 +7,10 @@ This repository also includes two other notebooks to demonstrate how to use scd 
 2. DLT Tables and Views: a notebook that includes all the code that creates the dlt tables.
 These two notebooks are designed to be used in a separate dlt pipeline.
 
+## Security and Secret Management
+
+For information about securing sensitive data and credentials, including how Microsoft Fabric integrates with Azure Key Vault, see [Key Vault Integration Guide](KEYVAULT_INTEGRATION.md).
+
 ## Notebooks
 
 ### 1. Generate Sample Data - Notebook
@@ -74,5 +78,11 @@ This notebook creates a materialized view by joining the silver tables for order
 - Under Delta Live Tables, create a pipeline by adding all the notebooks listed above.
 - Under **Add Configuration**, ensure you have configurations including catalog_name, schema_name, volume_name, and num_records
 
-Conclusion
+## Additional Documentation
+
+- [Key Vault Integration Guide](KEYVAULT_INTEGRATION.md) - Learn about Microsoft Fabric and Azure Key Vault integration for secure secret management
+- [Contributing Guidelines](CONTRIBUTING.md) - How to contribute to this repository
+
+## Conclusion
+
 This repository provides a simple and clear example of using Delta Live Tables in Databricks to manage and process data in a configuration-driven manner. Feel free to explore and modify the notebooks to suit your needs.
