@@ -1,0 +1,62 @@
+name: Deploy to VNet-Injected Azure Databricks using DAB
+
+# Disable automatic triggers - use manual trigger for controlled deployments
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to'
+        required: true
+        type: choice
+        options:
+          - dev
+          - qa
+          - prod
+
+# Cancel in-progress runs of this workflow
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ---------------------------
+  # Deploy using Databricks Asset Bundles (DAB)
+  # ---------------------------
+  deploy-bundle:
+    name: Deploy to ${{ github.event.inputs.environment }} using DAB (VNet)
+    # Use self-hosted runner with 'databricks-vnet' label for private network access
+    # This runner must be in the same VNet or have network access to the VNet-injected Databricks workspace
+    runs-on: [self-hosted, databricks-vnet]
+    environment: ${{ github.event.inputs.environment }}
+    
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      
+      - name: Install Databricks CLI v2
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/databricks/setup-cli/main/install.sh | bash
+          databricks --version
+      
+      - name: Validate Bundle Configuration
+        working-directory: asset-bundle
+        run: |
+          echo "Validating Databricks Asset Bundle for ${{ github.event.inputs.environment }}..."
+          databricks bundle validate -t ${{ github.event.inputs.environment }}
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
+      
+      - name: Deploy Bundle to Databricks Workspace
+        working-directory: asset-bundle
+        run: |
+          echo "Deploying Databricks Asset Bundle to ${{ github.event.inputs.environment }}..."
+          databricks bundle deploy -t ${{ github.event.inputs.environment }}
+        env:
+          DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
+          DATABRICKS_TOKEN: ${{ secrets.DATABRICKS_TOKEN }}
