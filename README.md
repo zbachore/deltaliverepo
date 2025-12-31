@@ -7,6 +7,26 @@ This repository also includes two other notebooks to demonstrate how to use scd 
 2. DLT Tables and Views: a notebook that includes all the code that creates the dlt tables.
 These two notebooks are designed to be used in a separate dlt pipeline.
 
+## Deployment
+
+### GitHub Actions for VNet-Injected Databricks
+
+This repository includes GitHub Actions workflows for automated deployment to VNet-injected (private network) Azure Databricks workspaces using Databricks Asset Bundles (DAB).
+
+**Key Features:**
+- ✅ Deploys to VNet-injected Databricks workspaces
+- ✅ Uses Databricks Asset Bundles for Infrastructure-as-Code
+- ✅ Supports Dev, QA, and Prod environments
+- ✅ Self-hosted runner support for private network access
+- ✅ Automated DLT pipeline deployment
+
+**Documentation:**
+- 📖 [VNet Deployment Guide](.github/workflows/README-VNET-DEPLOYMENT.md) - Comprehensive documentation
+- 🚀 [Quick Setup Guide](.github/workflows/SETUP-GUIDE.md) - Step-by-step setup instructions
+
+**Azure Pipelines:**
+For Azure DevOps deployments, see [`azure-pipelines.yml`](azure-pipelines.yml).
+
 ## Notebooks
 
 ### 1. Generate Sample Data - Notebook
