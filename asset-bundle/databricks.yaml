@@ -1,5 +1,5 @@
 bundle:
-  name: myproject
+  name: deltaliverepo
 
 variables:
   catalog_name:
@@ -11,6 +11,7 @@ variables:
 
 resources:
   pipelines:
+    # DLT Pipeline for Configuration-Driven approach
     pipeline_dlt_pipeline_configuration_driven:
       name: DLT-Pipeline-Configuration-Driven
       catalog: ${var.catalog_name}
@@ -25,23 +26,43 @@ resources:
         num_records: ${var.num_records}
       libraries:
         - notebook:
-            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/generate sample data
+            path: ../dlt-config-demo/generate sample data.py
         - notebook:
-            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Generate Views - AutoLoader
+            path: ../dlt-config-demo/Generate Views - AutoLoader.py
         - notebook:
-            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Load Bronze
+            path: ../dlt-config-demo/Load Bronze.py
         - notebook:
-            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Load Silver
+            path: ../dlt-config-demo/Load Silver.py
         - notebook:
-            path: /Users/zbelachew@gmail.com/GitHub/deltaliverepo/dlt-config-demo/Gold View
+            path: ../dlt-config-demo/Gold View.sql
+    
+    # DLT Pipeline for SCD demonstration
+    pipeline_dlt_scd_demo:
+      name: DLT-Refresh-SCD-Tables-Views
+      catalog: ${var.catalog_name}
+      schema: dlt
+      development: true
+      photon: true
+      serverless: true
+      configuration:
+        catalog_name: ${var.catalog_name}
+        schema_name: dlt
+        volume_name: ${var.volume_path}
+      libraries:
+        - notebook:
+            path: ../dlt-scd-demo/Generate-Append-Only-Delta-Sources.py
+        - notebook:
+            path: ../dlt-scd-demo/DLT Tables and Views.ipynb
 
 targets:
   dev:
     default: true
     mode: development
     workspace:
+      # For VNet-injected workspace, use private endpoint or internal DNS name
+      # This will be overridden by DATABRICKS_HOST environment variable in GitHub Actions
       host: https://adb-1675377898901427.7.azuredatabricks.net
-      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/dev
+      root_path: /Workspace/.bundle/${bundle.name}/dev
     variables:
       catalog_name: devcatalog
       volume_path: /Volumes/devcatalog/dlt/files
@@ -50,8 +71,10 @@ targets:
   qa:
     mode: development
     workspace:
+      # For VNet-injected workspace, use private endpoint or internal DNS name
+      # This will be overridden by DATABRICKS_HOST environment variable in GitHub Actions
       host: https://adb-1675377898901427.7.azuredatabricks.net
-      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/qa
+      root_path: /Workspace/.bundle/${bundle.name}/qa
     variables:
       catalog_name: qacatalog
       volume_path: /Volumes/qacatalog/dlt/files
@@ -60,8 +83,10 @@ targets:
   prod:
     mode: production
     workspace:
+      # For VNet-injected workspace, use private endpoint or internal DNS name
+      # This will be overridden by DATABRICKS_HOST environment variable in GitHub Actions
       host: https://adb-1675377898901427.7.azuredatabricks.net
-      root_path: /Workspace/Users/zbelachew@gmail.com/.bundle/${bundle.name}/prod
+      root_path: /Workspace/.bundle/${bundle.name}/prod
     variables:
       catalog_name: prodcatalog
       volume_path: /Volumes/prodcatalog/dlt/files
